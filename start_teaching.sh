@@ -19,11 +19,11 @@ fi
 ########### CONFIGURATION ##############
 OUTPUT_VIDEO=${PROJECT_NAME}.mkv
 WEBCAM=/dev/video0
-OUTPUT_SCALE="0.5" # a positive decimal number (<1.0 reduces)
+OUTPUT_SCALE="0.5" # A positive decimal number (<1.0 reduces)
 STACK="HORIZONTAL" # HORIZONTAL or VERTICAL
-VIDEO_DELAY="00:00:00.0" #HH:MM:SS
-X264_PRESET="ultrafast" #encoding speed (less compression):  \ 
-WEBCAM_DESKTOP_RATIO="0.5" #between 0.0 and 1.0
+VIDEO_DELAY="00:00:01.0" # Delay with respect to sound in HH:MM:SS
+X264_PRESET="ultrafast" # Encoding speed (less compression):  \ 
+WEBCAM_DESKTOP_RATIO="0.5" # Webcam/destkop size, between 0.0 and 1.0
 # ultrafast, superfast, veryfast, faster, fast, medium, \
 # slow, slower, veryslow, placebo. 
 ########################################
