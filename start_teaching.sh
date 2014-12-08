@@ -17,7 +17,7 @@ else
 	PROJECT_NAME=$1
 fi
 ########### CONFIGURATION ##############
-OUTPUT_VIDEO=${PROJECT_NAME}.mkv
+OUTPUT_VIDEO=${PROJECT_NAME}.mp4
 WEBCAM=/dev/video0
 OUTPUT_SCALE="0.5" # a positive decimal number (<1.0 reduces)
 STACK="VERTICAL" # HORIZONTAL or VERTICAL
@@ -27,6 +27,11 @@ X264_PRESET="medium" #encoding speed (less compression):  \
 # slow, slower, veryslow, placebo. 
 ########################################
 
+echo "Output video: ${OUTPUT_VIDEO}"
+echo "Webcam: $WEBCAM"
+echo "Stack: $STACK"
+echo "Video delay: $VIDEO_DELAY"
+echo "X264 preset: $X264_PRESET"
 
 #detect desktop resolution to scale webcam to the same size
 CURRENT_RESOLUTION=$(xrandr -q | awk -F'current' -F',' 'NR==1 \
@@ -54,9 +59,11 @@ else
 fi
 OUTPUT_RES="${FINAL_WIDTH%.*}:${FINAL_HEIGHT%.*}"
 
+echo "Output res: $OUTPUT_RES, scale: $OUTPUT_SCALE"
+
 FINAL_FILTER="${STACK_FILTER}[merged];[merged]scale=${OUTPUT_RES}"
 
 avconv -y -f pulse -i default -itsoffset $VIDEO_DELAY \
 -f video4linux2 -i $WEBCAM -itsoffset $VIDEO_DELAY -f x11grab -s $CURRENT_RESOLUTION -show_region 1 -i :0.0 \
 -filter_complex "$FINAL_FILTER" \
--vcodec libx264 -preset ${X264_PRESET} -r 20 ${OUTPUT_VIDEO}
+-vcodec libx264 -preset ${X264_PRESET} -strict experimental -r 20 ${OUTPUT_VIDEO}
