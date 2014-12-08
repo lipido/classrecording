@@ -20,7 +20,7 @@ fi
 OUTPUT_VIDEO=${PROJECT_NAME}.mkv
 WEBCAM=/dev/video0
 OUTPUT_SCALE="0.5" # a positive decimal number (<1.0 reduces)
-STACK="HORIZONTAL" # HORIZONTAL or VERTICAL
+STACK="VERTICAL" # HORIZONTAL or VERTICAL
 VIDEO_DELAY="00:00:01.0" #HH:MM:SS
 ########################################
 
