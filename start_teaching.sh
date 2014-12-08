@@ -18,7 +18,7 @@ else
 fi
 ########### CONFIGURATION ##############
 OUTPUT_VIDEO=${PROJECT_NAME}.mkv
-WEBCAM=/dev/video1
+WEBCAM=/dev/video0
 OUTPUT_SCALE="0.5" # a positive decimal number (<1.0 reduces)
 STACK="VERTICAL" # HORIZONTAL or VERTICAL
 ########################################
@@ -52,7 +52,7 @@ OUTPUT_RES="${FINAL_WIDTH%.*}:${FINAL_HEIGHT%.*}"
 
 FINAL_FILTER="${STACK_FILTER}[merged];[merged]scale=${OUTPUT_RES}"
 
-avconv -y -f alsa -i pulse \
+avconv -y -f pulse -i default \
 -f video4linux2 -i $WEBCAM -f x11grab -s $CURRENT_RESOLUTION -show_region 1 -i :0.0 \
 -filter_complex "$FINAL_FILTER" \
--vcodec libx264 -r 20 -threads auto ${OUTPUT_VIDEO}
+-vcodec libx264 -preset ultrafast -r 20 ${OUTPUT_VIDEO}
