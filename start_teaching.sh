@@ -22,6 +22,9 @@ WEBCAM=/dev/video0
 OUTPUT_SCALE="0.5" # a positive decimal number (<1.0 reduces)
 STACK="VERTICAL" # HORIZONTAL or VERTICAL
 VIDEO_DELAY="00:00:01.0" #HH:MM:SS
+X264_PRESET="medium" #encoding speed (less compression):  \ 
+# ultrafast, superfast, veryfast, faster, fast, medium, \
+# slow, slower, veryslow, placebo. 
 ########################################
 
 
@@ -56,4 +59,4 @@ FINAL_FILTER="${STACK_FILTER}[merged];[merged]scale=${OUTPUT_RES}"
 avconv -y -f pulse -i default -itsoffset $VIDEO_DELAY \
 -f video4linux2 -i $WEBCAM -itsoffset $VIDEO_DELAY -f x11grab -s $CURRENT_RESOLUTION -show_region 1 -i :0.0 \
 -filter_complex "$FINAL_FILTER" \
--vcodec libx264 -preset ultrafast -r 20 ${OUTPUT_VIDEO}
+-vcodec libx264 -preset ${X264_PRESET} -r 20 ${OUTPUT_VIDEO}
