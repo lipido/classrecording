@@ -23,6 +23,7 @@ OUTPUT_SCALE="0.5" # a positive decimal number (<1.0 reduces)
 STACK="HORIZONTAL" # HORIZONTAL or VERTICAL
 VIDEO_DELAY="00:00:00.0" #HH:MM:SS
 X264_PRESET="ultrafast" #encoding speed (less compression):  \ 
+WEBCAM_DESKTOP_RATIO="0.5" #between 0.0 and 1.0
 # ultrafast, superfast, veryfast, faster, fast, medium, \
 # slow, slower, veryslow, placebo. 
 ########################################
@@ -37,22 +38,28 @@ echo "X264 preset: $X264_PRESET"
 CURRENT_RESOLUTION=$(xrandr -q | awk -F'current' -F',' 'NR==1 \
 {gsub("( |current)","");print $2}' | tr 'x' ':')
 
-STACK_HORIZONTAL="[1:v:0]scale=${CURRENT_RESOLUTION}[camera];\
-[2:v:0]pad=iw*2:ih[bg];[bg][camera]overlay=w"
-STACK_VERTICAL="[1:v:0]scale=${CURRENT_RESOLUTION}[camera];\
-[2:v:0]pad=iw:ih*2[bg];[bg][camera]overlay=0:h"
-
-
 CURRENT_WIDTH=$(echo $CURRENT_RESOLUTION | cut -d ":" -f 1)
 CURRENT_HEIGHT=$(echo $CURRENT_RESOLUTION | cut -d ":" -f 2)
+WEBCAM_WIDTH=$(echo "$CURRENT_WIDTH * $WEBCAM_DESKTOP_RATIO" | bc)
+WEBCAM_WIDTH=${WEBCAM_WIDTH%.*}
+WEBCAM_HEIGHT=$(echo "$CURRENT_HEIGHT * $WEBCAM_DESKTOP_RATIO" | bc)
+WEBCAM_HEIGHT=${WEBCAM_HEIGHT%.*}
+
+echo "Webcam size: ${WEBCAM_WIDTH}:${WEBCAM_HEIGHT}"
+STACK_HORIZONTAL="[1:v:0]scale=${WEBCAM_WIDTH}:${WEBCAM_HEIGHT}[camera];\
+[2:v:0]pad=iw+${WEBCAM_WIDTH}:ih[bg];[bg][camera]overlay=W-${WEBCAM_WIDTH}"
+STACK_VERTICAL="[1:v:0]scale=${WEBCAM_WIDTH}:${WEBCAM_HEIGHT}[camera];\
+[2:v:0]pad=iw:ih+${WEBCAM_HEIGHT}[bg];[bg][camera]overlay=0:H-${WEBCAM_HEIGHT}"
+
+
 if [ "$STACK" == "HORIZONTAL" ]; then
   STACK_FILTER=$STACK_HORIZONTAL
-  FINAL_WIDTH=$(echo "$CURRENT_WIDTH * 2 * $OUTPUT_SCALE" | bc)
+  FINAL_WIDTH=$(echo "($CURRENT_WIDTH + $WEBCAM_WIDTH) * $OUTPUT_SCALE" | bc)
   FINAL_HEIGHT=$(echo "$CURRENT_HEIGHT * $OUTPUT_SCALE" | bc)  
 elif [ "$STACK" == "VERTICAL" ]; then
   STACK_FILTER=$STACK_VERTICAL
   FINAL_WIDTH=$(echo "$CURRENT_WIDTH * $OUTPUT_SCALE" | bc)
-  FINAL_HEIGHT=$(echo "$CURRENT_HEIGHT * 2 * $OUTPUT_SCALE" | bc)  
+  FINAL_HEIGHT=$(echo "($CURRENT_HEIGHT + $WEBCAM_HEIGHT) * $OUTPUT_SCALE" | bc)
 else
   echo "STACK not recognized";
   exit 1
